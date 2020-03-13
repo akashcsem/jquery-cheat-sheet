@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+    <head>
+        <meta charset="utf-8" />
+        <title>Custom Repeater</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    </head>
+
+
+    <body>
+        <div class="container">
+            <div class="row mt-4">
+                <div class="col-md-9 mx-auto" style="margin-bottom: 10px !important;">
+                    <table style="width: 98%; margin-left: 1%" class="table table-bordered" id="table_id">
+                        <!-- table header -->
+                        <thead>
+                            <tr style="border-bottom: 1px solid gray !important;">
+                                <td colspan="5" class="text-left" style="font-size: 15px">
+                                    <b style="text-decoration: underline">Custom Repeater</b>
+                                </td>
+                            </tr>
+                        </thead>
+
+                        <!-- table body -->
+                        <tbody class="repeater">
+                            <tr>
+                                <td class="serial">
+                                    <span>1</span>
+                                </td>
+                                <td>
+                                    <select class="form-control form-control-sm">
+                                        <option value="">Select</option>
+                                        <option value="1">Item 1</option>
+                                        <option value="2">Item 2</option>
+                                        <option value="3">Item 3</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input class="input-sm form-control item" >
+                                </td>
+                                <td>
+                                    <input class="input-sm form-control item" >
+                                </td>
+                                <td class="action">
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteItem(this)">Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+
+                        <!-- table footer -->
+                        <tfoot>
+                            <tr>
+                                <td colspan="5">
+                                    <button class="btn btn-sm btn-success px-2 add-new">Add New</button>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- jquery script -->
+        <script type="text/javascript">
+            // <!-- add/insert new item -->
+            $('.add-new').click(function () {
+                row = $('<tr>' + $('.repeater tr:first').html() + '</tr>').hide();
+                $('table tbody tr:last').after(row);
+                row.fadeIn(1000);
+                setSerialNumber()
+            })
+
+            // <!-- delete/remove row -->
+            function deleteItem(event) {
+                if ($('.serial').length > 1) {
+                    $(event).closest('tr').fadeOut('slow', function(){
+                        $(event).closest('tr').remove();
+                    });
+                    setSerialNumber()
+                }
+            }
+
+            // <!-- set serial number -->
+            function setSerialNumber() {
+                $('table tbody tr').each(function (index, value) {
+                    $(value).find('.serial span').text(index+1)
+                });
+            }
+        </script>
+    </body>
+</html>

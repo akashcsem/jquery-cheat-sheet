@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+	<head>
+		<meta charset="utf-8" />
+		<title>Remove added item from dropdown</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+        <style type="text/css">
+            td {
+                text-align: center;
+            }
+        </style>
+	</head>
+	
+	
+	<body>
+		<div class="container">
+            <div class="row mt-4">
+                <div class="col-md-8 mx-auto" style="margin-bottom: 10px !important;">
+                    <table style="width: 98%; margin-left: 1%" class="table table-bordered" id="table_id">
+                        <tr style="border-bottom: 1px solid gray !important;">
+                            <td colspan="4" class="text-left" style="font-size: 15px">
+                                <b style="text-decoration: underline">Data Entry</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <!-- item dropdown -->
+                                <div class="input-group input-group-sm" style="width: 45%!important; float: left; ">
+                                    <div class="input-group-prepend">
+                                        <label class="input-group-text add-new-item" style="cursor: pointer">Description</label>
+                                    </div>
+                                    <select class="chosen-select production-rate-description form-control form-control-sm" id="ddlFruits">
+                                        <option value="">- Select -</option>
+                                    </select>
+                                </div>
+
+                                <!-- quantity -->
+                                <div class="input-group input-group-sm" style="width: 45%!important; margin-left: auto !important; float: right; ">
+                                    <div class="input-group-prepend">
+                                        <label class="input-group-text" onkeypress="return event.charCode == 46 || event.charCode >= 48 && event.charCode <= 57">Quantity</label>
+                                    </div>
+                                    <input class="input-sm form-control production-quantity" style="width: 120px">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="padding: 0; font-size: 12px;" class="text-danger text-center">
+                                Description will be added if item is selected and fill quantity
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Description</td>
+                            <td>Quantity</td>
+                            <td>Rate</td>
+                            <td>Action</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+		</div>
+
+        <script type="text/javascript">
+            <!-- first load item using jquery -->
+            let removedItems = [];
+            let data = [
+                    { id:1,rate:5, description:'Mango'},
+                    { id:2,rate:15, description:'Litchi'},
+                    { id:2,rate:25, description:'Apples'},
+                    { id:4,rate:35, description:'Banana'},
+                    { id:5,rate:45, description:'Cherry'},
+                    { id:6,rate:55, description:'Jackfruit'},
+                    { id:7,rate:65, description:'Papaya'},
+                    { id:8,rate:75, description:'Coconut'},
+                    { id:9,rate:85, description:'Guava'},
+                    { id:10,rate:95, description:'Black Berry'},
+                ]
+
+
+                // <!-- initially fill data to dropdown
+                $('.production-rate-description').empty();
+                $('.production-rate-description').append('<option value=""> Select </option>');
+                for(let i=0; i<data.length; i++) {
+                    $('.production-rate-description').append('<option data-rate="' + data[i].rate + '" value="' + data[i].id + '">' + data[i].description + '</option>')
+                }
+
+            // <!-- added item when press enter
+            $('.production-quantity').keypress(function(event) {
+                // <!-- first catch key code
+                let keycode = (event.keyCode ? event.keyCode : event.which);
+                // <!-- check key is enter
+                if(keycode == '13'){
+                    // <!-- prevent form submit
+                    event.preventDefault();
+                    let description = $('.production-rate-description option:selected');
+                    if ($(this).val() != '' && description.val() != '') {
+                        let r = document.getElementById('table_id').insertRow();
+                        let c1 = r.insertCell(0);
+                        let c2 = r.insertCell(1);
+                        let c3 = r.insertCell(2);
+                        let c4 = r.insertCell(3);
+
+                        c1.innerHTML = '<span class="description">' + description.html() + '</span>';
+                        c2.innerHTML = '<input style="width:100px !important" class="quantity form-control input-sm" value="' + $(this).val() + '">';
+                        c3.innerHTML = '<span class="rate">' + description.attr('data-rate') + '</span>';
+                        c4.innerHTML = '<button onclick="deleteItem(this)" class="btn btn-sm btn-danger" data-id="' + $(this).val() + '"> Delete </button>';
+
+                        $(this).val('')
+                        removedItems.push(description.html())
+                        loadItemsToDropdown()
+                    }
+                }
+            });
+
+
+            // <!-- delete item from table and push into item list
+            function deleteItem(event) {
+                // let id = $(event).attr('data-id')
+                let description = $(event).closest('tr').find('.description').text()
+                // let quantity    = $(event).closest('tr').find('.quantity').text()
+                // let rate        = $(event).closest('tr').find('.rate').text()
+                $(event).closest('tr').remove()
+                remove_array_element(description);
+                loadItemsToDropdown()
+
+            }
+
+            // <!-- load items to dropdown
+            function loadItemsToDropdown() {
+                $('.production-rate-description').empty();
+                $('.production-rate-description').append('<option value=""> Select </option>');
+                for(let i=0; i<data.length; i++) {
+                    if(removedItems.indexOf(data[i].description) !== -1){
+                        // alert("Value exists!")
+                    } else{
+                        $('.production-rate-description').append('<option data-rate="' + data[i].rate + '" value="' + data[i].id + '">' + data[i].description + '</option>')
+                    }
+                }
+            }
+
+            // <!-- remove item from an array
+            function remove_array_element(n)
+            {
+                var index = removedItems.indexOf(n);
+                if (index > -1) {
+                    removedItems.splice(index, 1);
+                }
+            }
+        </script>
+	</body>
+</html>
